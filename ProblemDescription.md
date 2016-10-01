@@ -67,3 +67,15 @@ plus or minus in a node perplexes me.
 Introducing a notion of qualitative time to
 QPN:s would give rise to a semantics of
 CLD:s.
+
+It would be nice to completely work out the
+types and typeclasses involved in QPN:s and
+their ultimate probability space (?) semantics.
+What we could do for finite (or maybe countable?)
+domains is to use some Haskell logic programming
+library to construct candiates for the probability
+distributions from a QPN. This could be done in a
+straight forward way as all a QPN is is a series
+of constraints on the probability distribution
+(specifically the "First order stochastic dominance"
+relation).
