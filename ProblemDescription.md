@@ -43,7 +43,10 @@ dependence :: DSL1 name a -> DSL2 name b -> (DSL1 name a, DSL2 name b)
 
 This seems to have been partially (or completely?) solved
 by [Datatypes á la Carte](http://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf).
-However, as state monads are not free we may need some different machinery.
+
+One approach one may take is to find a way to make (simple?) code-generating DSLs
+free monads so that we may connect multiple ones in to the same thing.
+The question is if it is possible to do optimizations in this construction.
 
 ### Relating this to GraphDSL
 
