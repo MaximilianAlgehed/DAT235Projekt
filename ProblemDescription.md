@@ -41,6 +41,9 @@ between the DSLs:
 dependence :: DSL1 name a -> DSL2 name b -> (DSL1 name a, DSL2 name b)
 ```
 
+This seems to have been partially (or completely?) solved
+by [Datatypes á la Carte](http://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf).
+
 ### Relating this to GraphDSL
 
 The two DSLs are `GraphDSL`, which in my imagined world
