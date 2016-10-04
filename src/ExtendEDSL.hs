@@ -51,9 +51,16 @@ instance EDSLAlgebra GetGroup where
 instance EDSLAlgebra CComm where
     runEDSL (CComm group cont) = do
                                     c <- reifyGroup group
+                                    printStr $ "creating communicator "++(show c)
                                     cont c
+
+instance (EDSLAlgebra f, EDSLAlgebra g) => EDSLAlgebra (f :+: g) where
+    runEDSL (Inl f) = runEDSL f
+    runEDSL (Inr g) = runEDSL g
 
 example :: Free (GetGroup :+: CComm) Comm
 example = do
-            g <- getGroup 5
-            createComm (Union g g)
+            g <- getGroup 1
+            g1 <- getGroup 10
+            g2 <- getGroup 100
+            createComm (Intersection g2 (Union g g1))
