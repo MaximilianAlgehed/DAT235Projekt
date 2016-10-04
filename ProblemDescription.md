@@ -80,7 +80,7 @@ types and typeclasses involved in QPN:s and
 their ultimate probability space (?) semantics.
 What we could do for finite (or maybe countable?)
 domains is to use some Haskell logic programming
-library to construct candiates for the probability
+library to construct candidates for the probability
 distributions from a QPN. This could be done in a
 straight forward way as all a QPN is is a series
 of constraints on the probability distribution
