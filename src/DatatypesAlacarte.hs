@@ -39,6 +39,10 @@ instance (Functor f) => Monad (Free f) where
     (Pure a) >>= f = f a
     (Impure a) >>= f = Impure $ fmap (>>=f) a
 
+foldFree :: (Functor f) => (a -> b) -> (f b -> b) -> Free f a -> b
+foldFree pure imp (Pure x)   = pure x
+foldFree pure imp (Impure f) = imp (fmap (foldFree pure imp) f) 
+
 -- subtyping for higher kinds
 -- this can probably be generalised
 class f :<: g where
