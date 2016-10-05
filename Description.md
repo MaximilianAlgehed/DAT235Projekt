@@ -1,14 +1,20 @@
 # DAT235 project description
 
-##Project summary
+## Project summary
 An area of interest in the interaction between the social sciences and computer science / mathematics is the notion
 of qualitative, or imprecise, reasoning. The goal of this project is to develop domain specific languages
-for modelling and decision making in Climate Resilient Urban Design. At the core of the project lies
-the concept of Causal Loop Diagrams, a qualitative abstraction of decision making and causality. Part of the project
-will involve formalising the semantics of Causal Loop Diagrams in terms of, maybe, a probabilistic model
-derived from the work of Wellman, Renooij, and Silja among others on Qualitative Probabilistic Networks.
-This work will hopefully help connect some of the abstract notions in social science to mathematical and formal
-foundations through the use of domain specific languages.
+for modeling and decision making in Climate Resilient Urban Design using qualitative reasoning.
+There are two major problems in designing domain specific languages for wide and imprecise
+domains like Climate Resilient Urban Design. The first is to define a precise semantics
+of qualitative concepts. The second problem is the decomposition of the domain. For large and complicated
+domains an attractive approach to DSL design is to design several small domain specific languages
+for different sub domains and some how combine these small DSLs at will to reason about larger subsets of the original domain.
 
-##Builds on courses
+The work will focus on the second problem. Combining several domain specific languages to reason about
+large, composite, domains. The aim is to decompose the problem of Climate Resilient Urban Design
+in to a number of domain specific languages for e.g. reasoning about spatial limitations,
+stakeholder preferences, causality, etc. and show how these languages can be combined
+to reason about larger problems in Climate Resilient Urban Design.
+
+## Builds on courses
 Advanced Functional Programming, Domain Specific Languages of Mathematics, Discrete Mathematics, Probability Theory
