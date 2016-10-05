@@ -96,3 +96,6 @@ example = do
             free $ printStr "You can, with some effort, put Prog HighExp statements in here too!"
             createComm (Intersection g2 (Union g g1))
             return ()
+
+compileFree :: (EDSLAlgebra f, Functor f) => Free f a -> Prog HighExp a
+compileFree = foldFree return runEDSL

@@ -16,7 +16,7 @@ import Control.Monad
 -- possible to represent kinds like *, or ConstraintKind.
 --
 -- ConstraintKind is obviously representable in the
--- operational-alacarte package. I don't know about *.
+-- operational-alacarte package.
 data (f :+: g) a = Inl (f a) | Inr (g a)
 
 infixr :+:

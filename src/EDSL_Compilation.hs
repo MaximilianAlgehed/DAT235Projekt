@@ -63,10 +63,6 @@ interpret int (Return a) = return a
 interpret int (p :>>= k) = interpret int p >>= interpret int . k
 interpret int (CMD cmd)  = int cmd
 
-class EvalExp exp where
-  -- Evaluate a closed expression
-  evalExp :: exp a -> a
-
 initRef :: Type a => exp a -> Prog exp (Ref a)
 initRef = CMD . InitRef
 
@@ -116,13 +112,6 @@ instance (Num a, Type a) => Num (LowExp a) where
   fromInteger = LLit . fromInteger
   (+) = LAdd
   (*) = LMul
-
-instance EvalExp LowExp where
-  evalExp (LLit a)   = a
-  evalExp (LAdd a b) = evalExp a + evalExp b
-  evalExp (LMul a b) = evalExp a * evalExp b
-  evalExp (LNot a)   = not $ evalExp a
-  evalExp (LEq a b)  = evalExp a == evalExp b
 
 instance FreeExp LowExp where
   constExp = LLit
