@@ -1,7 +1,13 @@
 {-# LANGUAGE GADTs, TypeOperators, FlexibleContexts, FlexibleInstances #-}
+import UsingImperativeEDSL
 import DatatypesAlacarte
 import EDSL_Compilation
 import Control.Monad
+import Language.Embedded.Expression
+import Language.Embedded.Imperative hiding ((:+:), (:<:))
+import Language.Embedded.Imperative.CMD (RefCMD (GetRef))
+import Language.Embedded.Backend.C
+import Language.Embedded.CExp
 
 -- These denote our "High" group expressions
 -- We will also need some "low" group expressions
@@ -24,23 +30,22 @@ reifyGroup' (Union gl gr) = do
                                  (mr, cr) <- reifyGroup' gr
                                  l <- ml
                                  r <- mr
-                                 printStr $ "creating group "++(show (l+r))
-                                 printStr $ "taking union "++(show l)++", "++(show r)
+                                 printf $ "creating group "++(show (l+r))
+                                 printf $ "taking union "++(show l)++", "++(show r)
                                  cl
                                  cr
-                                 return (return (l+r), printStr $ "deleting group "++(show (l+r)))
+                                 return (return (l+r),  printf $ "deleting group "++(show (l+r)))
 reifyGroup' (Intersection gl gr) = do
                                  (ml, cl) <- reifyGroup' gl
                                  (mr, cr) <- reifyGroup' gr
                                  l <- ml
                                  r <- mr
-                                 printStr $ "creating group "++(show (l+r))
-                                 printStr $ "taking taking intersection "++(show l)++", "++(show r)
+                                 printf $ "creating group "++(show (l+r))
+                                 printf $ "taking taking intersection "++(show l)++", "++(show r)
                                  cl
                                  cr
-                                 return (return (l+r), printStr $ "deleting group "++(show (l+r)))
+                                 return (return (l+r), printf $ "deleting group "++(show (l+r)))
 
-reifyGroup :: Group -> Prog HighExp Int
 reifyGroup g = join $ fmap fst $ reifyGroup' g
                
 type Comm = Int
@@ -61,20 +66,20 @@ createComm :: (CComm :<: f) => Group -> Free f Comm
 createComm group = inject (CComm group Pure)
 
 class EDSLAlgebra f where
-    runEDSL :: f (Prog HighExp a) -> Prog HighExp a
+    runEDSL :: f (Program CMD (Param2 HighExp CType) a) -> Program CMD (Param2 HighExp CType) a
 
 instance EDSLAlgebra GetGroup where
     runEDSL (GetGroup i cont) = do
-                                    printStr $ "getting group "++(show i)
+                                    printf $ "getting group "++(show i)
                                     cont (Get i)
 
 instance EDSLAlgebra CComm where
     runEDSL (CComm group cont) = do
                                     c <- reifyGroup group
-                                    printStr $ "creating communicator "++(show c)
+                                    printf $ "creating communicator "++(show c)
                                     cont c
 
-instance EDSLAlgebra (Prog HighExp) where
+instance EDSLAlgebra (Program CMD (Param2 HighExp CType)) where
     runEDSL = join 
 
 instance (EDSLAlgebra f, EDSLAlgebra g) => EDSLAlgebra (f :+: g) where
@@ -85,17 +90,18 @@ instance (EDSLAlgebra f, EDSLAlgebra g) => EDSLAlgebra (f :+: g) where
 -- which can be done by lifting the whole interface function by function.
 -- Such a lifting would not be a problem as it would only need to be done
 -- once!
-free :: (Prog HighExp :<: f) => Prog HighExp a -> Free f a
+free :: (Program CMD (Param2 HighExp CType) :<: f) => Program CMD (Param2 HighExp CType) a -> Free f a
 free prog = inject $ prog >>= (\x -> return $ Pure x)
 
-example :: Free (GetGroup :+: CComm :+: Prog HighExp) ()
+-- To note is that this examples mixes the "GetGroup" and "CComm" extensions to the (Program ...) monad
+example :: Free (GetGroup :+: CComm :+: Program CMD (Param2 HighExp CType)) ()
 example = do
             g <- getGroup 1
             g1 <- getGroup 10
             g2 <- getGroup 100
-            free $ printStr "You can, with some effort, put Prog HighExp statements in here too!"
+            free $ printf "You can, with some effort, put Prog HighExp statements in here too!"
             createComm (Intersection g2 (Union g g1))
             return ()
 
-compileFree :: (EDSLAlgebra f, Functor f) => Free f a -> Prog HighExp a
+compileFree :: (EDSLAlgebra f, Functor f) => Free f a -> Program CMD (Param2 HighExp CType) a
 compileFree = foldFree return runEDSL
