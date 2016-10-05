@@ -9,9 +9,19 @@ import Language.Embedded.Imperative.CMD (RefCMD (GetRef))
 import Language.Embedded.Backend.C
 import Language.Embedded.CExp
 
--- These denote our "High" group expressions
--- We will also need some "low" group expressions
--- in the target monad (like the Run monad)
+-- Groups represented naïvely
+--
+-- the problem with this is that
+-- the expressions are not from the
+-- rest of the program.
+--
+-- You can't even write:
+--  g <- do
+--          iff condition
+--              (get 5)
+--              (get 6)
+--  becuase it now becomes expressions in the
+--  Data syntax ...
 data Group where
     Get          :: Int -> Group
     Union        :: Group -> Group -> Group
