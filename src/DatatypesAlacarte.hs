@@ -10,7 +10,16 @@ module DatatypesAlacarte where
 import Control.Monad
 
 -- Generalised sum types from datatypes á la carte
+--
+-- The problem here is that one can only represent
+-- sums of kind * -> *. I don't know if it would be
+-- possible to represent kinds like *, or ConstraintKind.
+--
+-- ConstraintKind is obviously representable in the
+-- operational-alacarte package. I don't know about *.
 data (f :+: g) a = Inl (f a) | Inr (g a)
+
+infixr :+:
 
 instance (Functor f, Functor g) => Functor (f :+: g) where
     fmap f (Inl v) = Inl $ fmap f v
@@ -43,8 +52,6 @@ foldFree :: (Functor f) => (a -> b) -> (f b -> b) -> Free f a -> b
 foldFree pure imp (Pure x)   = pure x
 foldFree pure imp (Impure f) = imp (fmap (foldFree pure imp) f) 
 
--- subtyping for higher kinds
--- this can probably be generalised
 class f :<: g where
     inf :: f a -> g a
 

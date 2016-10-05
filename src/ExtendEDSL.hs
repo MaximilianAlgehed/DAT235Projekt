@@ -11,21 +11,38 @@ data Group where
     Union        :: Group -> Group -> Group
     Intersection :: Group -> Group -> Group
 
--- TODO: Rewrite this to pass a countinuation around that frees
--- interm groups
-reifyGroup :: Group -> Prog HighExp Int
-reifyGroup (Get i)       = return i
-reifyGroup (Union gl gr) = do
-                             l <- reifyGroup gl
-                             r <- reifyGroup gr
-                             printStr $ "taking union "++(show l)++", "++(show r)
-                             return (l+r)
-reifyGroup (Intersection gl gr) = do
-                             l <- reifyGroup gl
-                             r <- reifyGroup gr
-                             printStr $ "taking intersection "++(show l)++", "++(show r)
-                             return (l+r)  
+-- The idea here is that we pass around the
+-- expression that frees up interm groups untill
+-- the very end
+--
+-- obviously this is subject to the sharing problem,
+-- which needs to be fixed for a solution like this one to be viable.
+reifyGroup' :: Group -> Prog HighExp (Prog HighExp Int, Prog HighExp ())
+reifyGroup' (Get i) = return (return i, return ())
+reifyGroup' (Union gl gr) = do
+                                 (ml, cl) <- reifyGroup' gl
+                                 (mr, cr) <- reifyGroup' gr
+                                 l <- ml
+                                 r <- mr
+                                 printStr $ "creating group "++(show (l+r))
+                                 printStr $ "taking union "++(show l)++", "++(show r)
+                                 cl
+                                 cr
+                                 return (return (l+r), printStr $ "deleting group "++(show (l+r)))
+reifyGroup' (Intersection gl gr) = do
+                                 (ml, cl) <- reifyGroup' gl
+                                 (mr, cr) <- reifyGroup' gr
+                                 l <- ml
+                                 r <- mr
+                                 printStr $ "creating group "++(show (l+r))
+                                 printStr $ "taking taking intersection "++(show l)++", "++(show r)
+                                 cl
+                                 cr
+                                 return (return (l+r), printStr $ "deleting group "++(show (l+r)))
 
+reifyGroup :: Group -> Prog HighExp Int
+reifyGroup g = join $ fmap fst $ reifyGroup' g
+               
 type Comm = Int
 
 data GetGroup t = GetGroup Comm (Group -> t)
@@ -65,13 +82,17 @@ instance (EDSLAlgebra f, EDSLAlgebra g) => EDSLAlgebra (f :+: g) where
     runEDSL (Inr g) = runEDSL g
 
 -- The next goal is obviously to get rid of the need for this ugly thing!
+-- which can be done by lifting the whole interface function by function.
+-- Such a lifting would not be a problem as it would only need to be done
+-- once!
 free :: (Prog HighExp :<: f) => Prog HighExp a -> Free f a
 free prog = inject $ prog >>= (\x -> return $ Pure x)
 
-example :: Free (GetGroup :+: (CComm :+: (Prog HighExp))) Comm
+example :: Free (GetGroup :+: CComm :+: Prog HighExp) ()
 example = do
             g <- getGroup 1
             g1 <- getGroup 10
             g2 <- getGroup 100
             free $ printStr "You can, with some effort, put Prog HighExp statements in here too!"
             createComm (Intersection g2 (Union g g1))
+            return ()
