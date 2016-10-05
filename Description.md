@@ -16,5 +16,14 @@ in to a number of domain specific languages for e.g. reasoning about spatial lim
 stakeholder preferences, causality, etc. and show how these languages can be combined
 to reason about larger problems in Climate Resilient Urban Design.
 
+The goal is to use free monads[1] combined with the techniques of Axelsson. et. al.[2, 3] to combine multiple code generating
+domain specific languages that will target the constraint programming language MiniZinc[4] using the haskelzinc(SIC)[5] library.
+
+\[1\] [Data types à la Carte](http://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf)
+\[2\] [Combining Deep and Shallow Embedding for EDSL](http://www.cse.chalmers.se/~emax/documents/svenningsson2013combining.pdf)
+\[3\] [Generic Monadic Constructs for Embedded Languages](http://www.cse.chalmers.se/~josefs/publications/paper21_cameraready.pdf)
+\[4\] [MiniZinc](https://www.minizinc.org)
+\[5\] [The haskelzinc library](https://github.com/GRACeFUL-project/haskelzinc)
+
 ## Builds on courses
 Advanced Functional Programming, Domain Specific Languages of Mathematics, Discrete Mathematics, Probability Theory
