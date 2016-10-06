@@ -104,6 +104,17 @@ free :: (Program CMD (Param2 HighExp CType) :<: f) => Program CMD (Param2 HighEx
 free prog = inject $ prog >>= (\x -> return $ Pure x)
 
 -- To note is that this examples mixes the "GetGroup" and "CComm" extensions to the (Program ...) monad
+--
+-- We would like to have a type that looks something like:
+-- (HighExp :<: groupExp, groupExp :~>: Prog HighExp, HighExp :<: ccommExp, ccommExp :~>: Prog HighExp) =>
+-- Free (GetGroup groupExp :+: CComm ccommExp :+: Program CMD ...) ()
+--
+-- or something like that. We would like to capture that HighExp and CType etc. lift to the
+-- high level DSLs. One difficulty is how to connect the two extensions, do you require that
+-- there is a bijection between groupExp and ccommExp for an instance?
+-- Is there a way for the user to choose how much interaction the two DSLs can have etc.
+--
+-- Thoughts?
 example :: Free (GetGroup :+: CComm :+: Program CMD (Param2 HighExp CType)) ()
 example = do
             g <- getGroup 1
