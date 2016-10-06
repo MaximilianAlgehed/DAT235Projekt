@@ -18,6 +18,7 @@ to reason about larger problems in Climate Resilient Urban Design.
 
 The goal is to use free monads[1] combined with the techniques of Axelsson. et. al.[2, 3] to combine multiple code generating
 domain specific languages that will target the constraint programming language MiniZinc[4] using the haskelzinc(SIC)[5] library.
+If successful the technique of combining DSLs with higher order abstract syntax using free monads would be novel.
 
 \[1\] [Data types à la Carte](http://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf)
 
