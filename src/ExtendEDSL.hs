@@ -127,6 +127,5 @@ example = do
 compileFree :: (EDSLAlgebra f, Functor f) => Free f a -> Program CMD (Param2 HighExp CType) a
 compileFree = foldFree return runEDSL
 
-{- Solve associativity of :+: with a smart constructor -}
 {- Subtypes on the kind level to solve the injection in to
  - predicates -}

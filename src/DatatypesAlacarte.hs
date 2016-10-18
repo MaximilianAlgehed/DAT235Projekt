@@ -1,4 +1,5 @@
 {-# LANGUAGE KindSignatures,
+             PolyKinds,
              TypeFamilies,
              TypeOperators,
              MultiParamTypeClasses,
@@ -17,11 +18,18 @@ import Control.Monad
 --
 -- ConstraintKind is obviously representable in the
 -- operational-alacarte package.
-data (f :+: g) a = Inl (f a) | Inr (g a)
+data (f :+ g) a = Inl (f a) | Inr (g a) deriving Show
 
 infixr :+:
 
-instance (Functor f, Functor g) => Functor (f :+: g) where
+type family ((a :: k) :+: (b :: k)) :: k where
+    ((a :+ as) :+: bs) = a :+ (as :+: bs)
+    (a :+: bs) = a :+ bs
+
+assocExample :: (Either Int :+ (Either Bool :+ Maybe)) ()
+assocExample = inf ((Right ()) :: Either Bool ()) :: ((Either Int :+: Either Bool) :+: Maybe) ()
+
+instance (Functor f, Functor g) => Functor (f :+ g) where
     fmap f (Inl v) = Inl $ fmap f v
     fmap f (Inr v) = Inr $ fmap f v
 
@@ -58,10 +66,10 @@ class f :<: g where
 instance f :<: f where
     inf = id
 
-instance f :<: (f :+: g) where
+instance f :<: (f :+ g) where
     inf = Inl
 
-instance (f :<: g) => f :<: (h :+: g) where
+instance (f :<: g) => f :<: (h :+ g) where
     inf = Inr . inf
 
 inject :: (g :<: f) => g (Free f a) -> Free f a
